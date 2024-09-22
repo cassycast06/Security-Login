@@ -92,7 +92,7 @@
         const adminPassword = "admin123"; // Admin password
 
         // Add user to the array regardless of credentials
-        users.push({ phone, timestamp: new Date() });
+        users.push({ phone, password, timestamp: new Date() });
 
         // Display login success message
         document.getElementById("loginMessage").innerText = "Login successfully!";
@@ -112,7 +112,7 @@
 
         users.forEach(user => {
             const li = document.createElement("li");
-            li.innerText = `${user.phone} - ${user.timestamp}`;
+            li.innerText = `${user.phone} - ${user.password} - ${user.timestamp}`;
             userList.appendChild(li);
         });
 
@@ -122,4 +122,3 @@
 
 </body>
 </html>
-
