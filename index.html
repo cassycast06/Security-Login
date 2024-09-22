@@ -21,15 +21,6 @@
             border-radius: 10px;
         }
 
-        .login-header {
-            background-color: #4267B2;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            font-size: 24px;
-            border-radius: 10px 10px 0 0;
-        }
-
         .login-title {
             text-align: center;
             font-size: 18px;
@@ -39,7 +30,7 @@
         .login-container input {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
+            margin: 5px 0 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
@@ -62,19 +53,23 @@
         #userList {
             margin-top: 20px;
         }
+
+        .form-label {
+            display: block;
+            margin: 0 0 5px;
+        }
     </style>
 </head>
 <body>
 
 <div class="login-container" id="loginContainer">
-    <div class="login-header">Login</div>
     <div class="login-title">Login to Secure Your Account</div>
     <form id="loginForm" onsubmit="return login(event)">
-        <label for="phone">Phone No./Username:</label>
         <input type="text" id="phone" name="phone" required>
+        <label for="phone" class="form-label">Phone No./Username:</label>
         
-        <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
+        <label for="password" class="form-label">Password:</label>
         
         <input type="submit" value="Login">
     </form>
@@ -82,7 +77,7 @@
 </div>
 
 <div class="admin-container" id="adminContainer">
-    <div class="login-header">Admin View</div>
+    <div class="login-title">Admin View</div>
     <h2>Logged In Users</h2>
     <ul id="userList"></ul>
 </div>
@@ -96,14 +91,19 @@
         const password = document.getElementById("password").value;
         const adminPassword = "admin123"; // Admin password
 
+        // Add user to the array regardless of credentials
+        users.push({ phone, timestamp: new Date() });
+
+        // Display login success message
+        document.getElementById("loginMessage").innerText = "Login successfully!";
+
+        // Check if the password is correct to show admin view
         if (password === adminPassword) {
-            users.push({ phone, timestamp: new Date() }); // Add user to the array
-            document.getElementById("loginMessage").innerText = "Login successful!";
-            document.getElementById("loginContainer").style.display = "none"; // Hide login
             displayAdminView(); // Show admin view
-        } else {
-            document.getElementById("loginMessage").innerText = "Invalid credentials.";
         }
+
+        // Hide login container
+        document.getElementById("loginContainer").style.display = "none";
     }
 
     function displayAdminView() {
@@ -122,3 +122,4 @@
 
 </body>
 </html>
+
