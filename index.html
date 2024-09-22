@@ -64,16 +64,17 @@
             background-color: #0056b3;
         }
 
-        .message {
-            margin-top: 20px;
+        .error {
             color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
+
     <div class="login-container">
         <h2>Login to Secure Your Account</h2>
-        <form method="POST">
+        <form id="loginForm">
             <div class="input-group">
                 <label for="username">Phone No./Username:</label>
                 <input type="text" id="username" name="username" required>
@@ -83,23 +84,33 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Login</button>
+            <div class="error" id="errorMessage"></div>
         </form>
-
-        <?php
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $valid_username = "admin";
-            $valid_password = "password123";
-
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-
-            if ($username === $valid_username && $password === $valid_password) {
-                echo "<div class='message' style='color:green;'>Login successful. Username: $username, Password: $password</div>";
-            } else {
-                echo "<div class='message'>Invalid login details!</div>";
-            }
-        }
-        ?>
     </div>
+
+    <script>
+        // Dummy credentials for demonstration
+        const validUsername = "admin";
+        const validPassword = "password123";
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("errorMessage");
+
+            // Simple check for valid credentials
+            if (username === validUsername && password === validPassword) {
+                // If login is successful
+                alert("Login successful! Username: " + username + " | Password: " + password);
+                errorMessage.textContent = ""; // Clear any previous errors
+            } else {
+                // If login fails
+                errorMessage.textContent = "Invalid username or password!";
+            }
+        });
+    </script>
+
 </body>
 </html>
